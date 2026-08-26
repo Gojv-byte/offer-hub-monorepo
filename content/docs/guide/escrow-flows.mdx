@@ -141,22 +141,19 @@ flowchart LR
 
 ### Milestone-Based Release
 
-For larger projects, funds can be split across milestones. Each milestone follows its own create → fund → release cycle.
+For larger projects, create one order with multiple milestones. The milestones are tracked within the same order and share its escrow. Complete each milestone as work is delivered, then use the order resolution flow to release, refund, or dispute the order.
 
 ```mermaid
 flowchart LR
-    subgraph M1["Milestone 1"]
-        A1[Funded] --> B1[Delivered]
-        B1 --> C1[Released]
-    end
-    subgraph M2["Milestone 2"]
-        A2[Funded] --> B2[Delivered]
-        B2 --> C2[Released]
+    subgraph O["One order"]
+      A1[Escrow funded] --> B1[Milestone delivered]
+      B1 --> C1[Milestone completed]
+      C1 --> D1[Next milestone]
     end
 ```
 
 <Callout type="tip">
-  Model milestones as separate orders sharing the same `project_id`. Each order has its own escrow contract and independent lifecycle.
+    Milestones do not have separate order lifecycles or escrow contracts. Use `GET /orders/{id}/milestones` to list them and `POST /orders/{id}/milestones/{ref}/complete` to mark one complete within the parent order.
 </Callout>
 
 ---

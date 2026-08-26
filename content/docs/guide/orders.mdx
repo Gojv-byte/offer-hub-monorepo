@@ -91,7 +91,7 @@ const order = await sdk.orders.create({
 
 ## Order with Milestones
 
-For large projects, break payment into milestones:
+For large projects, create one order with multiple milestones. The milestones belong to the same order and share its escrow; they are not separate orders.
 
 ```typescript
 const order = await sdk.orders.create({
@@ -101,16 +101,76 @@ const order = await sdk.orders.create({
   currency: 'USD',
   title: 'Mobile App Development',
   milestones: [
-    { ref: 'design', title: 'UI/UX Design', amount: '1000.00' },
-    { ref: 'backend', title: 'Backend Development', amount: '2000.00' },
-    { ref: 'frontend', title: 'Frontend Development', amount: '1500.00' },
-    { ref: 'testing', title: 'Testing & Launch', amount: '500.00' }
+    { ref: 'design', description: 'UI/UX Design', amount: '1000.00' },
+    { ref: 'backend', description: 'Backend Development', amount: '2000.00' },
+    { ref: 'frontend', description: 'Frontend Development', amount: '1500.00' },
+    { ref: 'testing', description: 'Testing & Launch', amount: '500.00' }
   ]
 });
 ```
 
 <Callout type="note">
   Milestone amounts must add up to the total order amount.
+</Callout>
+
+## Managing Milestones
+
+Milestones are created as part of the parent order. After the order reaches `IN_PROGRESS`, use the milestone reference to inspect or complete an individual milestone. Completing a milestone updates that milestone within the same order; it does not create a new order or escrow contract.
+
+### List Milestones
+
+```bash
+curl http://localhost:4000/api/v1/orders/ord_xyz789/milestones \
+  -H "Authorization: Bearer ohk_live_..."
+```
+
+**Response**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "mls_abc123",
+      "orderId": "ord_xyz789",
+      "milestoneRef": "design",
+      "title": "UI/UX Design",
+      "amount": "1000.00",
+      "status": "OPEN",
+      "createdAt": "2026-02-25T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+### Complete a Milestone
+
+The completion endpoint has no request body. The `ref` path parameter is the `milestoneRef` supplied when the order was created.
+
+```bash
+curl -X POST http://localhost:4000/api/v1/orders/ord_xyz789/milestones/design/complete \
+  -H "Authorization: Bearer ohk_live_..."
+```
+
+**Response**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "mls_abc123",
+    "orderId": "ord_xyz789",
+    "milestoneRef": "design",
+    "title": "UI/UX Design",
+    "amount": "1000.00",
+    "status": "COMPLETED",
+    "createdAt": "2026-02-25T12:00:00.000Z"
+  }
+}
+```
+
+<Callout type="note">
+  A milestone can be completed only while its parent order is `IN_PROGRESS`. Completing all milestones does not replace the order resolution flow; release the order's funds separately.
 </Callout>
 
 ## Reserving Funds
