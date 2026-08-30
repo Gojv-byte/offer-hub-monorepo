@@ -82,10 +82,10 @@ const order = await sdk.orders.create({
   currency: 'USD',
   title: 'Mobile App Development',
   milestones: [
-    { ref: 'design', description: 'UI/UX Design', amount: '1000.00' },
-    { ref: 'backend', description: 'Backend Development', amount: '2000.00' },
-    { ref: 'frontend', description: 'Frontend Development', amount: '1500.00' },
-    { ref: 'testing', description: 'Testing & Launch', amount: '500.00' }
+    { ref: 'design', title: 'UI/UX Design', amount: '1000.00' },
+    { ref: 'backend', title: 'Backend Development', amount: '2000.00' },
+    { ref: 'frontend', title: 'Frontend Development', amount: '1500.00' },
+    { ref: 'testing', title: 'Testing & Launch', amount: '500.00' }
   ]
 });
 ```
